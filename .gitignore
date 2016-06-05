@@ -2,6 +2,7 @@
 *.egg-info
 *.egg
 *.pyc
+.DS_Store
 .cache
 build
 dist
