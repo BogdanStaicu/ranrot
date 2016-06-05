@@ -37,7 +37,7 @@ $(document).ready(function () {
         paginationSpeed: 400,
         singleItem: true,
         transitionStyle: "fadeUp",
-        autoPlay: true,
+        autoPlay: 10000,
         navigationText: ["<i class='fa fa-angle-left'></i>", "<i class='fa fa-angle-right'></i>"]
 
     });
