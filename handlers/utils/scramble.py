@@ -1,4 +1,3 @@
-#scramble.py
 from PIL import Image
 import sys
 import os
@@ -37,20 +36,6 @@ class Scrambler(object):
             out[i] = seq[cur]
             cur += 1
         return out
-
-
-class FileScrambler(Scrambler):
-    def __init__(self, file=None, random=random):
-        self.file = file
-        self.random = random
-        self.random.seed(hash(self.get_file_size()))
-        
-    def get_file_size(self):
-        old_file_position = self.file.tell()
-        self.file.seek(0, os.SEEK_END)
-        size = self.file.tell()
-        self.file.seek(old_file_position, os.SEEK_SET)
-        return size
 
 
 class MessageScrambler(Scrambler):

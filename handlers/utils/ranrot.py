@@ -1,37 +1,13 @@
 import ctypes
 import time
+import argparse
 
-
-class RanrotBGenerator:
-    KK = 17
-    JJ = 10
-    R1 = 13
-    R2 = 9
-    
-    MASK = 0xFFFFFFFF
-    MASK_LENGTH = MASK.bit_length()
-
-    def __init__(self, seed=12345):
-        self.p1 = self.p2 = 0
-        self.rand_buffer = []
-        self.rand_buffer_copy = []
-        self.seed(seed)
+class RanrotBase(object):
 
     def _lrotl(self, x, r):
         left = (x << r) & self.MASK
         right = x >> (self.MASK_LENGTH-r)
         return left | right
-
-    def test(self):
-        if self.rand_buffer[self.p1] == self.rand_buffer_copy[0]:
-            same = True
-            for i in xrange(self.KK):
-                if self.rand_buffer[i] != self.rand_buffer_copy[self.KK - self.p1 + i]:
-                    same = False
-                    break
-            if same:
-                return False
-        return True
 
     def shuffle(self, x, random=None, int=int):
         """x, random=random.random -> shuffle list x in place; return None.
@@ -47,6 +23,103 @@ class RanrotBGenerator:
             j = int(random() * (i+1))
             x[i], x[j] = x[j], x[i]
 
+    def randint(self, min=0, max=100):
+        interval = max - min
+        if interval <= 0:
+            print 'Invalid interval'
+            return None
+
+        x = int(interval * self.random())
+        if x >= interval:
+            x -= 1
+        return min + x
+
+    def jumpahead(self, num):
+        for i in xrange(num):
+            self.random()
+
+
+class RanrotWGenerator(RanrotBase):
+    KK = 17
+    JJ = 10
+    R1 = 19
+    R2 =  27
+
+    MASK = 0xFFFFFFFFFFFFFFFF
+    MASK_LENGTH = MASK.bit_length()
+
+    def __init__(self, seed=12345):
+        self.p1 = self.p2 = 0
+        self.rand_buffer = []
+        for i in xrange(self.KK):
+            self.rand_buffer.append([0,0])
+        self.randbits = [0, 0]
+        self.seed(seed)
+
+    def getrandbits(self):
+        z = ctypes.c_ulong(self._lrotl(self.rand_buffer[self.p1][0], self.R1) + self.rand_buffer[self.p2][0]).value
+        y = ctypes.c_ulong(self._lrotl(self.rand_buffer[self.p1][1], self.R2) + self.rand_buffer[self.p2][1]).value
+
+        self.rand_buffer[self.p1][0] = y
+        self.rand_buffer[self.p1][1] = z
+
+        self.p1 = self.p1 - 1 if self.p1 > 0 else self.KK -1
+        self.p2 = self.p2 - 1 if self.p2 > 0 else self.KK -1
+
+        self.randbits[0] = y
+        self.randbits[1] = z
+        return y
+
+    def random(self):
+        z = self.getrandbits()
+        self.randbits[1] = ctypes.c_ulong((z & 0x000FFFFF) | 0x3FF00000).value
+
+        x = self.randbits[0] + self.randbits[1]
+
+        # return self.randp1.exp - 1.0
+        return float(x)*(1.0/self.MASK)
+
+    def seed(self, seed):
+        s = seed
+        for i in xrange(self.KK):
+            for j in xrange(2):
+                s = ctypes.c_ulong(s *  2891336453 + 1).value
+                self.rand_buffer[i][j] = s
+
+        self.p1 = 0
+        self.p2 = self.JJ
+
+        for i in xrange(31):
+            self.getrandbits()
+
+
+class RanrotBGenerator(RanrotBase):
+    KK = 17
+    JJ = 10
+    R1 = 13
+    R2 = 9
+    
+    MASK = 0xFFFFFFFF
+    MASK_LENGTH = MASK.bit_length()
+
+    def __init__(self, seed=12345):
+        self.p1 = self.p2 = 0
+        self.rand_buffer = []
+        self.rand_buffer_copy = []
+        self.seed(seed)
+
+    def test(self):
+        if self.rand_buffer[self.p1] == self.rand_buffer_copy[0]:
+            same = True
+            for i in xrange(self.KK):
+                if self.rand_buffer[i] != self.rand_buffer_copy[self.KK - self.p1 + i]:
+                    same = False
+                    break
+            if same:
+                return False
+        return True
+
+
     def seed(self, seed):
         i = 0
         s = seed
@@ -61,7 +134,7 @@ class RanrotBGenerator:
         self.rand_buffer_copy = self.rand_buffer + self.rand_buffer
 
         for i in xrange(self.KK): 
-            self.random()  
+            self.getrandbits()
          
     def getrandbits(self, k=32):
         x = 0
@@ -85,32 +158,31 @@ class RanrotBGenerator:
         x = self.getrandbits()
         return float(x)*(1.0/self.MASK)
 
-    def randint(self, min=0, max=100):
-        interval = max - min
-        if interval <= 0:
-            print 'Invalid interval'
-            return None
-        
-        x = int(interval * self.random())
-        if x >= interval:
-            x -= 1 
-        return min + x
 
-    def jumpahead(self, num):
-        for i in xrange(num):
-            self.random()
 
 if __name__ == '__main__':
-    a = RanrotBGenerator()
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('generator', help='choose the RanRot implementation desired', choices=['ranrotB', 'ranrotW'])
+    parser.add_argument('--size', help='number of random numbers to generate', default=2500000 )
+    parser.add_argument('--seed', help='the seed for the random number generator', default=12345)
+    parser.add_argument('output', help='choose the output file for the random numbers', default='gentest.out')
+    args = parser.parse_args()
+
+    gens = {'ranrotB': RanrotBGenerator,
+            'ranrotW': RanrotWGenerator}
+
+    gen = gens[args.generator](int(args.seed))
+
     st = time.time()
-    
-    with open('py_test.out', 'w+') as f:
+
+    with open(args.output, 'w+') as f:
         i = j = 0
-        while i < 2500000:
-            f.write('{0:08X}'.format(a.getrandbits()))
+        while i < int(args.size):
+            f.write('{0:08X}'.format(gen.getrandbits()))
             j += 1
             if j > 9:
                 j = 0
                 f.write('\n')
-            i +=1      
+            i +=1
     print('Total time: %s' % (time.time() - st))

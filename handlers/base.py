@@ -6,7 +6,7 @@ import tornado
 import tornado.web
 from PIL import Image
 
-from utils.ranrot import RanrotBGenerator
+from utils.ranrot import RanrotBGenerator, RanrotWGenerator
 from utils.scramble import MessageScrambler, ImageScrambler
 
 import random as randomMT
@@ -15,6 +15,7 @@ import random as randomMT
 PRNGS_MAP = {
     'default': randomMT,
     'ranrotB': RanrotBGenerator(),
+    'ranrotW': RanrotWGenerator(),
 }
 
 
@@ -28,6 +29,7 @@ def get_generator(gen_key, size=12345):
         random_cls.jumpahead(seq)
         ret = random_cls
     except Exception as e:
+        print traceback.print_exc()
         randomMT.seed(hash(size))
         randomMT.jumpahead(size)
         ret = randomMT
@@ -45,7 +47,7 @@ class GenerateRandomNumbers(tornado.web.RequestHandler):
     def get(self):
         seed = self.get_argument('seed', int(time.time()))
         limit = self.get_argument('count', 1000)
-        random = RanrotBGenerator(seed=seed)
+        random = RanrotWGenerator(seed=seed)
         for i in xrange(min(limit, 1000)):
             self.write(unicode(random.random()) + '<br>')
 
