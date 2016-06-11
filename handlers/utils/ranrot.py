@@ -12,24 +12,32 @@ class RanrotBase(object):
         if random is None:
             random = self.random
         for i in reversed(xrange(1, len(x))):
-            # pick an element in x[:i+1] with which to exchange x[i]
             j = int(random() * (i+1))
             x[i], x[j] = x[j], x[i]
 
-    def randint(self, min=0, max=100):
-        interval = max - min
+    def randint(self, min_value=0, max_value=100):
+        interval = max_value - min_value
         if interval <= 0:
-            print 'Invalid interval'
+            # 'Invalid interval'
             return None
 
         x = int(interval * self.random())
         if x >= interval:
             x -= 1
-        return min + x
+        return min_value + x
 
     def jumpahead(self, num):
         for i in xrange(num):
             self.random()
+
+    def random(self):
+        raise NotImplementedError
+
+    def getrandbits(self):
+        raise NotImplementedError
+
+    def seed(self, seed):
+        raise NotImplementedError
 
 
 class RanrotWGenerator(RanrotBase):
@@ -50,8 +58,10 @@ class RanrotWGenerator(RanrotBase):
         self.seed(seed)
 
     def getrandbits(self):
-        z = ctypes.c_ulong(self._lrotl(self.rand_buffer[self.p1][0], self.R1) + self.rand_buffer[self.p2][0]).value
-        y = ctypes.c_ulong(self._lrotl(self.rand_buffer[self.p1][1], self.R2) + self.rand_buffer[self.p2][1]).value
+        z = ctypes.c_ulong(self._lrotl(self.rand_buffer[self.p1][0], self.R1) +
+                           self.rand_buffer[self.p2][0]).value
+        y = ctypes.c_ulong(self._lrotl(self.rand_buffer[self.p1][1], self.R2) +
+                           self.rand_buffer[self.p2][1]).value
 
         self.rand_buffer[self.p1][0] = y
         self.rand_buffer[self.p1][1] = z
@@ -66,10 +76,8 @@ class RanrotWGenerator(RanrotBase):
     def random(self):
         z = self.getrandbits()
         self.randbits[1] = ctypes.c_ulong((z & 0x000FFFFF) | 0x3FF00000).value
-
         x = self.randbits[0] + self.randbits[1]
 
-        # return self.randp1.exp - 1.0
         return float(x)*(1.0/self.MASK)
 
     def seed(self, seed):
