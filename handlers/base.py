@@ -29,7 +29,6 @@ def get_generator(gen_key, size=12345):
         random_cls.jumpahead(seq)
         ret = random_cls
     except Exception as e:
-        print traceback.print_exc()
         randomMT.seed(hash(size))
         randomMT.jumpahead(size)
         ret = randomMT

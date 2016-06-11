@@ -3,19 +3,12 @@ import time
 import argparse
 
 class RanrotBase(object):
-
     def _lrotl(self, x, r):
         left = (x << r) & self.MASK
         right = x >> (self.MASK_LENGTH-r)
         return left | right
 
     def shuffle(self, x, random=None, int=int):
-        """x, random=random.random -> shuffle list x in place; return None.
-
-        Optional arg random is a 0-argument function returning a random
-        float in [0.0, 1.0); by default, the standard random.random.
-        """
-
         if random is None:
             random = self.random
         for i in reversed(xrange(1, len(x))):
@@ -119,7 +112,6 @@ class RanrotBGenerator(RanrotBase):
                 return False
         return True
 
-
     def seed(self, seed):
         i = 0
         s = seed
@@ -161,12 +153,15 @@ class RanrotBGenerator(RanrotBase):
 
 
 if __name__ == '__main__':
-
     parser = argparse.ArgumentParser()
-    parser.add_argument('generator', help='choose the RanRot implementation desired', choices=['ranrotB', 'ranrotW'])
-    parser.add_argument('--size', help='number of random numbers to generate', default=2500000 )
-    parser.add_argument('--seed', help='the seed for the random number generator', default=12345)
-    parser.add_argument('output', help='choose the output file for the random numbers', default='gentest.out')
+    parser.add_argument('generator', help='implementarea RanRot de folosit',
+                        choices=['ranrotB', 'ranrotW'])
+    parser.add_argument('--size', help='numarul de numere pseudoaleatoare generate',
+                        default=2500000 )
+    parser.add_argument('--seed', help='seed-ul folosit de generator',
+                        default=12345)
+    parser.add_argument('output', help='fisierul de iesire',
+                        default='gentest.out')
     args = parser.parse_args()
 
     gens = {'ranrotB': RanrotBGenerator,
@@ -185,4 +180,4 @@ if __name__ == '__main__':
                 j = 0
                 f.write('\n')
             i +=1
-    print('Total time: %s' % (time.time() - st))
+    print('Timp de executie: %s' % (time.time() - st))
