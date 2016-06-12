@@ -44,11 +44,19 @@ class MainHandler(tornado.web.RequestHandler):
 
 class GenerateRandomNumbers(tornado.web.RequestHandler):
     def get(self):
-        seed = self.get_argument('seed', int(time.time()))
-        limit = self.get_argument('count', 1000)
-        random = RanrotWGenerator(seed=seed)
-        for i in xrange(min(limit, 1000)):
-            self.write(unicode(random.random()) + '<br>')
+        seed = int(self.get_argument('seed', time.time()))
+        limit = min(int(self.get_argument('count', 10000)), 10000)
+        random = PRNGS_MAP.get(self.get_argument('generator', 'default'))
+        random.seed(seed)
+        rows = limit / 10
+        extra = limit % 10
+        for i in xrange(rows):
+            self.write(', '.join(['{:10.12f}'.format(random.random())
+                                  for _ in xrange(10)]))
+            self.write('<br>')
+        self.write(', '.join(['{:10.12f}'.format(random.random())
+                              for _ in xrange(extra)]))
+
 
 
 class ScrambleText(tornado.web.RequestHandler):
