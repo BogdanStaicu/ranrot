@@ -391,21 +391,21 @@ Welcome Style
   /* ============
 Scramble Style
 ========================================================================== */
-#vernam-image, #vernam-message {
+#vernam-image, #vernam-message, #gen-random {
   padding: 60px 0;
   text-align: center;
 }
-#vernam-image h2, #vernam-message h2 {
+#vernam-image h2, #vernam-message h2, #gen-random h2 {
   text-transform: uppercase;
 }
-#vernam-image p, #vernam-message p {
+#vernam-image p, #vernam-message p, #gen-random p {
   margin-bottom: 40px;
 }
-#vernam-image .container-fluid , #vernam-message .container-fluid {
+#vernam-image .container-fluid , #vernam-message .container-fluid, #gen-random .container-fluid {
   padding-left: 0;
   padding-right: 0;
 }
-#vernam-image .container-fluid .col-lg-4 , #vernam-message .container-fluid .col-lg-4 {
+#vernam-image .container-fluid .col-lg-4 , #vernam-message .container-fluid .col-lg-4, #gen-random .container-fluid .col-lg-4 {
   padding-left: 0;
   padding-right: 0;
 }

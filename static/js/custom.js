@@ -168,6 +168,15 @@ $(document).ready(function () {
             });
     });
 
+    $("#gen-action").click(function(){
+        var gen = $('#gen-prng').find(":selected").val();
+        var seed = $('#gen-seed').val();
+        var seqlen = $('#gen-seqno').val();
+        var url = '/random/?generator=' + gen + '&seed=' + (seed || 12345) + '&count=' + (seqlen || 10000);
+        console.log(url);
+        window.open(url, '_blank');
+    });
+
     $(function () {
         'use strict';
         // Change this to the location of your server-side upload handler:

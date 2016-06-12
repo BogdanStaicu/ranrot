@@ -58,6 +58,7 @@ favicon.ico
                             <li><a href="#owl-hero" class="page-scroll">Acasa</a></li>
                             <li><a href="#welcome" class="page-scroll">Introducere</a></li>
                             <li><a href="#services" class="page-scroll">Aplicabilitate</a></li>
+                            <li><a href="#gen-random" class="page-scroll">Generare numere</a></li>
                             <li><a href="#vernam-message" class="page-scroll">Criptare mesaj</a></li>
                             <li><a href="#vernam-image" class="page-scroll">Criptare imagine</a></li>
                             <li><a href="#links" class="page-scroll">Resurse utile</a></li>
@@ -189,6 +190,53 @@ favicon.ico
         </div>
     </section>
 
+    <!-- Random numbers
+	============================================= -->
+    <section id="gen-random">
+        <div class="container">
+            <h2>Generare numere pseudoaleatoare</h2>
+            <hr class="sep">
+                <p>Folosind acest formular se pot genera numere pseudoaleatoare.
+                    <br>
+                    Se poate selecta tipul de generator folosit si se pot specifica seed-ul generatorului si lungimea secventei de numere generate
+                </p>
+            <hr class="sep">
+            <div class="col-md-8 col-md-offset-2">
+                <form>
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>PRNG</th>
+                          <th>Seed</th>
+                          <th>Lungimea secventei</th>
+                            <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>
+                              <select id="gen-prng" class="form-control">
+                                <option value="default">implicit(MT)</option>
+                                <option value="ranrotB">RanrotB</option>
+                                <option value="ranrotW">RanrotW</option>
+                              </select>
+                          </td>
+                          <td>
+                              <input type="text" class="form-control" id="gen-seed" placeholder="PRNG Seed">
+                          </td>
+                          <td>
+                              <input type="text" class="form-control" id="gen-seqno" placeholder="Lungimea Secventei">
+                          </td>
+                            <td>
+                                <button id="gen-action" class="btn btn-default" type="button">Genereaza!</button>
+                            </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </section>
 
     <!-- Vernam message
 	============================================= -->
