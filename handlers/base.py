@@ -51,10 +51,10 @@ class GenerateRandomNumbers(tornado.web.RequestHandler):
         rows = limit / 10
         extra = limit % 10
         for i in xrange(rows):
-            self.write(', '.join(['{:10.12f}'.format(random.random())
+            self.write(', '.join(['{:16X}'.format(random.getrandbits(64))
                                   for _ in xrange(10)]))
             self.write('<br>')
-        self.write(', '.join(['{:10.12f}'.format(random.random())
+        self.write(', '.join(['{:16X}'.format(random.getrandbits(64))
                               for _ in xrange(extra)]))
 
 

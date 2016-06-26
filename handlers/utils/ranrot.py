@@ -57,7 +57,7 @@ class RanrotWGenerator(RanrotBase):
         self.randbits = [0, 0]
         self.seed(seed)
 
-    def getrandbits(self):
+    def _getrandbits(self):
         z = ctypes.c_ulong(self._lrotl(self.rand_buffer[self.p1][0], self.R1) +
                            self.rand_buffer[self.p2][0]).value
         y = ctypes.c_ulong(self._lrotl(self.rand_buffer[self.p1][1], self.R2) +
@@ -73,11 +73,14 @@ class RanrotWGenerator(RanrotBase):
         self.randbits[1] = z
         return y
 
-    def random(self):
-        z = self.getrandbits()
+    def getrandbits(self, k=64):
+        z = self._getrandbits()
         self.randbits[1] = ctypes.c_ulong((z & 0x000FFFFF) | 0x3FF00000).value
         x = self.randbits[0] + self.randbits[1]
+        return x
 
+    def random(self):
+        x = self.getrandbits()
         return float(x)*(1.0/self.MASK)
 
     def seed(self, seed):
